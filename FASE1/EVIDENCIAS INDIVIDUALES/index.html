@@ -1,11 +1,116 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
-	<title>Archivos Word</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lector de Documentos Word</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.0/mammoth.browser.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        #file-list {
+            list-style-type: none;
+            padding: 0;
+        }
+        #file-list li {
+            background-color: #fff;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #file-list li:hover {
+            background-color: #e0e0e0;
+        }
+        #document-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+        #select-folder {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #3498db;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        #select-folder:hover {
+            background-color: #2980b9;
+        }
+    </style>
 </head>
 <body>
-	<h1>Archivos Word</h1>
-	<ul id="file-list"></ul>
-	<script src="script.js"></script>
+    <h1>Lector de Documentos Word</h1>
+    <button id="select-folder">Seleccionar Carpeta</button>
+    <ul id="file-list"></ul>
+    <div id="document-content"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const fileList = document.getElementById('file-list');
+            const documentContent = document.getElementById('document-content');
+            const selectFolderButton = document.getElementById('select-folder');
+
+            selectFolderButton.addEventListener('click', async () => {
+                try {
+                    const dirHandle = await window.showDirectoryPicker();
+                    const files = [];
+
+                    for await (const entry of dirHandle.values()) {
+                        if (entry.kind === 'file' && entry.name.endsWith('.docx')) {
+                            files.push(entry);
+                        }
+                    }
+
+                    fileList.innerHTML = '';
+                    files.forEach(file => {
+                        const li = document.createElement('li');
+                        li.textContent = file.name;
+                        li.addEventListener('click', () => loadDocument(file));
+                        fileList.appendChild(li);
+                    });
+                } catch (err) {
+                    console.error('Error al seleccionar la carpeta:', err);
+                }
+            });
+
+            async function loadDocument(fileHandle) {
+                try {
+                    const file = await fileHandle.getFile();
+                    const arrayBuffer = await file.arrayBuffer();
+                    const result = await mammoth.convertToHtml({arrayBuffer: arrayBuffer});
+                    documentContent.innerHTML = result.value;
+
+                    // Animación simple para resaltar el cambio de contenido
+                    documentContent.style.opacity = '0';
+                    setTimeout(() => {
+                        documentContent.style.transition = 'opacity 0.5s ease';
+                        documentContent.style.opacity = '1';
+                    }, 50);
+                } catch (err) {
+                    console.error('Error al cargar el documento:', err);
+                    documentContent.innerHTML = '<p>Error al cargar el documento. Por favor, intenta de nuevo.</p>';
+                }
+            }
+        });
+    </script>
 </body>
 </html>
