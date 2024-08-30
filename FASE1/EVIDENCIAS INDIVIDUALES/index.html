@@ -3,65 +3,171 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lector de Documentos Word</title>
+    <title>Lector Profesional de Documentos Word</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.0/mammoth.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
     <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2c3e50;
+            --background-color: #ecf0f1;
+            --text-color: #34495e;
+            --hover-color: #2980b9;
+        }
+
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
             line-height: 1.6;
-            color: #333;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f4f4f4;
-        }
-        h1 {
-            text-align: center;
-            color: #2c3e50;
-        }
-        #file-list {
-            list-style-type: none;
+            color: var(--text-color);
+            background-color: var(--background-color);
+            margin: 0;
             padding: 0;
         }
-        #file-list li {
-            background-color: #fff;
-            margin-bottom: 10px;
-            padding: 10px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        #file-list li:hover {
-            background-color: #e0e0e0;
-        }
-        #document-content {
-            background-color: #fff;
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 20px;
-            border-radius: 5px;
-            margin-top: 20px;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
+
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            border-radius: 10px 10px 0 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+
+        main {
+            display: flex;
+            flex-grow: 1;
+            background-color: white;
+            border-radius: 0 0 10px 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        #file-list-container {
+            width: 30%;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-right: 1px solid #e9ecef;
+            overflow-y: auto;
+        }
+
         #select-folder {
-            display: block;
-            margin: 20px auto;
-            padding: 10px 20px;
+            width: 100%;
+            padding: 12px;
             font-size: 16px;
-            background-color: #3498db;
-            color: #fff;
+            background-color: var(--primary-color);
+            color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            transition: background-color 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.1s ease;
+            margin-bottom: 20px;
         }
+
         #select-folder:hover {
-            background-color: #2980b9;
+            background-color: var(--hover-color);
+        }
+
+        #select-folder:active {
+            transform: scale(0.98);
+        }
+
+        #file-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        #file-list li {
+            background-color: white;
+            margin-bottom: 10px;
+            padding: 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+        }
+
+        #file-list li:hover {
+            background-color: #e9ecef;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #file-list li i {
+            margin-right: 10px;
+            color: var(--primary-color);
+        }
+
+        #document-content {
+            flex-grow: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        #document-content:empty::before {
+            content: 'Seleccione un documento para visualizar su contenido.';
+            color: #6c757d;
+            font-style: italic;
+        }
+
+        /* Estilos para el contenido del documento */
+        #document-content h1, #document-content h2, #document-content h3 {
+            color: var(--secondary-color);
+        }
+
+        #document-content p {
+            text-align: justify;
+        }
+
+        #document-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
         }
     </style>
 </head>
 <body>
-    <h1>Lector de Documentos Word</h1>
-    <button id="select-folder">Seleccionar Carpeta</button>
-    <ul id="file-list"></ul>
-    <div id="document-content"></div>
+    <div class="container">
+        <header>
+            <h1>Lector Profesional de Documentos Word</h1>
+        </header>
+        <main>
+            <div id="file-list-container">
+                <button id="select-folder">
+                    <i class="fas fa-folder-open"></i> Seleccionar Carpeta
+                </button>
+                <ul id="file-list"></ul>
+            </div>
+            <div id="document-content"></div>
+        </main>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -83,7 +189,7 @@
                     fileList.innerHTML = '';
                     files.forEach(file => {
                         const li = document.createElement('li');
-                        li.textContent = file.name;
+                        li.innerHTML = `<i class="far fa-file-word"></i> ${file.name}`;
                         li.addEventListener('click', () => loadDocument(file));
                         fileList.appendChild(li);
                     });
@@ -97,14 +203,12 @@
                     const file = await fileHandle.getFile();
                     const arrayBuffer = await file.arrayBuffer();
                     const result = await mammoth.convertToHtml({arrayBuffer: arrayBuffer});
+                    
+                    documentContent.classList.remove('fade-in');
+                    void documentContent.offsetWidth; // Trigger reflow
+                    documentContent.classList.add('fade-in');
                     documentContent.innerHTML = result.value;
 
-                    // Animación simple para resaltar el cambio de contenido
-                    documentContent.style.opacity = '0';
-                    setTimeout(() => {
-                        documentContent.style.transition = 'opacity 0.5s ease';
-                        documentContent.style.opacity = '1';
-                    }, 50);
                 } catch (err) {
                     console.error('Error al cargar el documento:', err);
                     documentContent.innerHTML = '<p>Error al cargar el documento. Por favor, intenta de nuevo.</p>';
