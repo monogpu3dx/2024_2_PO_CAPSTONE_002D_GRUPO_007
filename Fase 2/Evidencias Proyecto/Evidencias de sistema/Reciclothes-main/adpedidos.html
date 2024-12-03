@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pedidos - ReciClothes</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="adstyle.css">
+    <link rel="icon" href="media/ReciClothes_sinf.png">
+    <link href="https://cdn.jsdelivr.net/npm/@sweetalert2/theme-material-ui/material-ui.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <div class="container">
+        <nav class="sidebar">
+            <div class="logo">
+                <div class="logo-img">
+                    <img src="media\ReciClothes_sinf.png" alt="ReciCLothes Logo" class="logo-img">
+                    <h2>ReciClothes</h2>
+                </div>
+            </div>
+            <div class="sidebar-menu">
+                <ul>
+                    <!-- <li><a href="admin.html" id="dashboardLink"><i class="fas fa-chart-line"></i> <span>Dashboard</span></a></li> -->
+                    <li><a href="adproductos.html" id="productosLink"><i class="fas fa-tshirt"></i> <span>Productos</span></a></li>
+                    <!-- <li><a href="adventas.html" id="ventasLink"><i class="fas fa-dollar-sign"></i> <span>Ventas</span></a></li> -->
+                    <li><a href="adpedidos.html" id="pedidosLink"><i class="fas fa-shopping-cart"></i> <span>Pedidos</span></a></li>
+                    <!-- <li><a href="adtienda.html" id="tiendaLink"><i class="fas fa-store"></i> <span>Tienda</span></a></li> -->
+                    <!-- <li><a href="adclientes.html" id="clientesLink"><i class="fas fa-users"></i> <span>Clientes</span></a></li> -->
+                </ul>
+            </div>
+            <div class="sidebar-footer">
+                <ul>
+                    <li><a href="index.html"><i class="fas fa-user"></i> <span>Inicio</span></a></li>
+                    <!-- <li><a href="adajustes.html" id="ajustesLink"><i class="fas fa-cog"></i> <span>Ajustes</span></a></li> -->
+                    <li><a href="#" id="logout"><i class="fas fa-sign-out-alt"></i> <span>Cerrar sesión</span></a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <main class="main-content">
+            <div class="orders-header">
+                <h1>Gestión de Pedidos</h1>
+                <div class="quick-stats">
+                    <div class="stat-card" data-status="Pendiente">
+                        <i class="fas fa-clock"></i>
+                        <div class="stat-info">
+                            <h3>Pendientes</h3>
+                            <p id="pendienteCount">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" data-status="En Proceso">
+                        <i class="fas fa-cog"></i>
+                        <div class="stat-info">
+                            <h3>En Proceso</h3>
+                            <p id="procesoCount">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" data-status="Enviado">
+                        <i class="fas fa-truck"></i>
+                        <div class="stat-info">
+                            <h3>Enviados</h3>
+                            <p id="enviadoCount">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" data-status="Entregado">
+                        <i class="fas fa-check-circle"></i>
+                        <div class="stat-info">
+                            <h3>Entregados</h3>
+                            <p id="entregadoCount">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card" data-status="Cancelado">
+                        <i class="fas fa-times-circle"></i>
+                        <div class="stat-info">
+                            <h3>Cancelados</h3>
+                            <p id="canceladoCount">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- <div class="orders-filters">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Buscar pedido por ID, cliente o estado...">
+                </div>
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">Todos</button>
+                    <button class="filter-btn" data-filter="pending">Pendientes</button>
+                    <button class="filter-btn" data-filter="processing">En Proceso</button>
+                    <button class="filter-btn" data-filter="shipping">En Envío</button>
+                    <button class="filter-btn" data-filter="completed">Completados</button>
+                </div>
+            </div> -->
+
+            <div class="orders-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID Orden</th>
+                            <th>Cliente</th>
+                            <th>Email</th>
+                            <th>Teléfono</th>
+                            <th>Dirección</th>
+                            <th>Número Casa</th>
+                            <th>Productos</th>
+                            <th>Fecha</th>
+                            <th>Total</th>                           
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ordersTableBody">
+                        <!-- Los pedidos se cargarán dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="paginationContainer" class="pagination"></div>
+        </main>
+
+        <div id="orderDetailsModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Detalles del Pedido #<span id="orderIdDetail"></span></h2>
+                    <button class="close-modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <div class="order-info">
+                        <div class="customer-info">
+                            <h3>Información del Cliente</h3>
+                            <p><strong>Nombre:</strong> <span id="customerName"></span></p>
+                            <p><strong>Email:</strong> <span id="customerEmail"></span></p>
+                            <p><strong>Teléfono:</strong> <span id="customerPhone"></span></p>
+                        </div>
+                        <div class="shipping-info">
+                            <h3>Información de Envío</h3>
+                            <p><strong>Dirección:</strong> <span id="shippingAddress"></span></p>
+                            <p><strong>Ciudad:</strong> <span id="shippingCity"></span></p>
+                            <p><strong>Código Postal:</strong> <span id="shippingZip"></span></p>
+                        </div>
+                    </div>
+                    <div class="order-products">
+                        <h3>Productos</h3>
+                        <table class="products-table">
+                            <thead>
+                                <tr>
+                                    <th>Producto</th>
+                                    <th>Cantidad</th>
+                                    <th>Precio</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orderProductsBody">
+                                <!-- Productos del pedido -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="order-summary">
+                        <div class="summary-item">
+                            <span>Subtotal:</span>
+                            <span id="orderSubtotal"></span>
+                        </div>
+                        <div class="summary-item">
+                            <span>Envío:</span>
+                            <span id="orderShipping"></span>
+                        </div>
+                        <div class="summary-item total">
+                            <span>Total:</span>
+                            <span id="orderTotal"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="update-status-btn">Actualizar Estado</button>
+                    <button class="print-order-btn"><i class="fas fa-print"></i> Imprimir</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="adpedidos.js"></script>
+    <script>
+        // Función para actualizar los enlaces con el token actual
+        function actualizarEnlacesAdmin() {
+            // Obtener el token de la URL actual
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            
+            // Lista de todos los IDs de enlaces admin
+            const adminLinks = [
+                'dashboardLink',
+                'productosLink',
+                'ventasLink',
+                'pedidosLink',
+                'tiendaLink',
+                'clientesLink',
+                'ajustesLink'
+            ];
+            
+            // Actualizar cada enlace con el token
+            adminLinks.forEach(linkId => {
+                const link = document.getElementById(linkId);
+                if (link) {
+                    const baseHref = link.getAttribute('href').split('?')[0];
+                    link.href = `${baseHref}?token=${token}`;
+                }
+            });
+            
+            // Manejar el logout
+            const logoutBtn = document.getElementById('logout');
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    localStorage.removeItem('adminToken');
+                    localStorage.removeItem('userData');
+                    window.location.href = 'index.html';
+                });
+            }
+        }
+
+        // Verificar acceso y actualizar enlaces al cargar la página
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar acceso
+            const urlParams = new URLSearchParams(window.location.search);
+            const tokenUrl = urlParams.get('token');
+            const tokenAlmacenado = localStorage.getItem('adminToken');
+            const userData = JSON.parse(localStorage.getItem('userData') || '{}');
+            
+            // Verificar si es Jimena Arriagada y si tiene algún token válido
+            if (userData.name !== 'Jimena Arriagada') {
+                alert('No tienes autorización para acceder a esta página');
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Si no hay token en la URL pero hay uno almacenado, redirigir con el token
+            if (!tokenUrl && tokenAlmacenado) {
+                window.location.href = window.location.pathname + '?token=' + tokenAlmacenado;
+                return;
+            }
+
+            // Si hay token en la URL, actualizarlo en localStorage
+            if (tokenUrl) {
+                localStorage.setItem('adminToken', tokenUrl);
+            }
+            
+            // Actualizar enlaces
+            actualizarEnlacesAdmin();
+            
+            // Marcar el enlace activo según la página actual
+            const currentPage = window.location.pathname.split('/').pop();
+            const activeLink = document.querySelector(`a[href^="${currentPage}"]`);
+            if (activeLink) {
+                // Remover clase active de todos los enlaces
+                document.querySelectorAll('.sidebar-menu a').forEach(link => link.classList.remove('active'));
+                // Agregar clase active al enlace actual
+                activeLink.classList.add('active');
+            }
+        });
+    </script>
+</body>
+</html>
